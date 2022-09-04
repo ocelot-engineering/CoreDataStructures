@@ -1,6 +1,4 @@
 import static org.junit.jupiter.api.Assertions.*;
-
-import java.util.Collection;
 import java.util.LinkedList;
 
 class LinkedListUtilsTest {
@@ -40,9 +38,28 @@ class LinkedListUtilsTest {
 
     @org.junit.jupiter.api.Test
     void removeMaximumValues() {
+
+        // Instantiate empty and test lists
+        LinkedList<String> list = new LinkedList<>();
+        LinkedList<String> testList = new LinkedList<>();
+
+        // Fill list and test list
+        list.add("1");
+        list.add("7");
+        list.add("3");
+        list.add("11");
+        list.add("Hello");
+        testList.add("1");
+        testList.add("3");
+        testList.add("11");
+
+        LinkedListUtils.removeMaximumValues(list, 2);
+        assertEquals(testList, list);
+
     }
 
     @org.junit.jupiter.api.Test
     void containsSubsequence() {
+        fail("Not yet implemented");
     }
 }
