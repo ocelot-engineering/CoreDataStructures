@@ -23,6 +23,7 @@ public class LinkedListUtils {
 
 		// Early return if ll is empty
 		if (current == null) {
+			list.addFirst(value);
 			return;
 		}
 
@@ -42,7 +43,7 @@ public class LinkedListUtils {
 
 		// Insert after tail if appropriate (reached end of the iterator without value < current, meaning value is the
 		// largest element in the list and therefore should be added to the end.)
-		if(!intIterator.hasNext()) {
+		if(!intIterator.hasNext() & value > current) {
 			list.addLast(value);
 			return;
 		}
@@ -50,7 +51,7 @@ public class LinkedListUtils {
 		// Insert value in appropriate spot (just before the current element)
 		intIterator.previous();
 		intIterator.add(value);
-		
+
 	}
 	
 
