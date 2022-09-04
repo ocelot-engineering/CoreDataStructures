@@ -91,8 +91,39 @@ public class LinkedListUtils {
 	
 	public static boolean containsSubsequence(LinkedList<Integer> one, LinkedList<Integer> two) {
 
-		/* IMPLEMENT THIS METHOD! */
-		
-		return true; // this line is here only so this code will compile if you don't modify it
+		/*
+		   Terminology:
+		   one is main-sequence
+		   two is sub-sequence
+		*/
+
+		// Early return from empty or null
+		if (one == null || one.isEmpty() || two == null || two.isEmpty()) {
+			return false;
+		}
+
+		// Take the first element of the subsequence, then see if it's contained in the main sequence, if it
+		// is, will return the index of this element and therefore give a starting point for checking the
+		// rest of the sequence.
+		int startIndex = one.indexOf(two.peekFirst());
+		if (startIndex == -1) { // doesn't contain first element
+			return false;
+		}
+
+		// Iterate through the subsequence and see if the entire subsequence is present in the main sequence.
+		ListIterator<Integer> oneIter = one.listIterator(startIndex);
+
+		for (Integer element : two) {
+			// easier to read with it split up
+			if (!oneIter.hasNext()) {
+				return false;
+			}
+			if (oneIter.next().compareTo(element) != 0) {
+				return false;
+			}
+		}
+
+		// Entire sequence of sub is present in main, no more checks required so return true
+		return true;
 	}
 }

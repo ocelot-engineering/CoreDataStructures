@@ -60,6 +60,34 @@ class LinkedListUtilsTest {
 
     @org.junit.jupiter.api.Test
     void containsSubsequence() {
-        fail("Not yet implemented");
+        // Instantiate empty and test lists
+        LinkedList<Integer> one = new LinkedList<>();
+        LinkedList<Integer> two = new LinkedList<>();
+
+        one.add(1);
+        one.add(11);
+        one.add(15);
+        one.add(22);
+        one.add(33);
+        two.add(11);
+        two.add(15);
+        two.add(22);
+
+        assertTrue(LinkedListUtils.containsSubsequence(one, two));
+
+        one.clear();
+        two.clear();
+
+        one.add(1);
+        one.add(11);
+        one.add(15);
+        one.add(22);
+        one.add(33);
+        two.add(22);
+        two.add(33);
+        two.add(44);
+
+        assertFalse(LinkedListUtils.containsSubsequence(one, two));
+
     }
 }
