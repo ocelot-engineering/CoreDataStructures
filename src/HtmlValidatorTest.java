@@ -25,8 +25,8 @@ class HtmlValidatorTest {
 
         Stack<HtmlTag> expectedOutput = new Stack<>();
 
-        assertEquals(actualOutput1, expectedOutput);
-        assertEquals(actualOutput2, expectedOutput);
+        assertEquals(expectedOutput, actualOutput1);
+        assertEquals(expectedOutput, actualOutput2);
     }
 
     private void testMissingClose() throws IOException {
@@ -65,7 +65,6 @@ class HtmlValidatorTest {
         expectedOutput.add(new HtmlTag("head", true));
         expectedOutput.add(new HtmlTag("title", true));
         expectedOutput.add(new HtmlTag("p", true));
-        expectedOutput.add(new HtmlTag("body", true));
 
         assertEquals(expectedOutput, actualOutput);
     }
@@ -76,7 +75,6 @@ class HtmlValidatorTest {
         String TEST_RESOURCE_DIR = "resources/test/";
         String testFilePath = TEST_RESOURCE_DIR + testFile + ".html";
         Queue<HtmlTag> tags = HtmlReader.getTagsFromHtmlFile(testFilePath);
-        Stack<HtmlTag> output = HtmlValidator.isValidHtml(tags);
-        return output;
+        return HtmlValidator.isValidHtml(tags);
     }
 }
