@@ -25,12 +25,16 @@ public class Analyzer {
 			scanner = new Scanner(new BufferedReader(new FileReader(filename)));
 			while (scanner.hasNext()) {
 				line = scanner.nextLine();
-				score = Integer.parseInt(line.substring(0,2).trim());
-				text = line.substring(2).trim();
-				sentences.add(new Sentence(score, text));
+
+				// If well formatted, then add sentence
+				if (sentenceIsValid(line)) {
+					score = Integer.parseInt(line.substring(0,2).trim());
+					text = line.substring(2).trim();
+					sentences.add(new Sentence(score, text));
+				}
 			}
-		} catch (FileNotFoundException e) {
-			throw new RuntimeException(e);
+		} catch (FileNotFoundException | NullPointerException e) {
+			return sentences;
 		} finally {
 			if (scanner != null) {
 				scanner.close();
@@ -39,11 +43,36 @@ public class Analyzer {
 
 		return sentences;
 	}
+
+	/*
+	* Checking validity of line that generates sentence
+	*/
+	public static boolean sentenceIsValid(String line) {
+		return isTextValid(line) && isScoreValid(line);
+	}
+
+	private static boolean isTextValid(String line) {
+		return line.matches("^-?\\d{1}\\s\\w+.*");
+	}
+
+	private static boolean isScoreValid(String line) {
+		int score = getScoreFromLine(line);
+		return score <= 2 && score >= -2;
+	}
+
+	private static int getScoreFromLine(String line) {
+		return Integer.parseInt(line.substring(0,2).trim());
+	}
 	
 	/*
 	 * Implement this method in Part 2
 	 */
 	public static Set<Word> allWords(List<Sentence> sentences) {
+
+		// Early return for null or empty sentences
+		if (sentences == null || sentences.isEmpty()) {
+			return new HashSet<>();
+		}
 
 		HashMap<String, Word> words = new HashMap<>();
 		Word word;
@@ -52,23 +81,26 @@ public class Analyzer {
 		String[] wordKeySplit;
 
 		for (Sentence sentence : sentences) {
-			sentenceTokens = new StringTokenizer(sentence.getText());
+			try {
+				sentenceTokens = new StringTokenizer(sentence.getText());
 
-			while (sentenceTokens.hasMoreTokens()) {
-				// Clean word so it can be used as key
-				wordKey = getStemmedWord(sentenceTokens.nextToken());
-				if (wordKey == null) {
-					continue;
-				}
+				while (sentenceTokens.hasMoreTokens()) {
+					// Clean word so it can be used as key
+					wordKey = getStemmedWord(sentenceTokens.nextToken());
+					if (wordKey == null || wordKey.isEmpty()) {
+						continue;
+					}
 
-				// Add or update word in hashset
-				if (words.containsKey(wordKey)) {
-					words.get(wordKey).increaseTotal(sentence.getScore());
-				} else {
-					word = new Word(wordKey);
-					word.increaseTotal(sentence.getScore());
-					words.put(wordKey, word);
+					// Add or update word in hashset
+					if (words.containsKey(wordKey)) {
+						words.get(wordKey).increaseTotal(sentence.getScore());
+					} else {
+						word = new Word(wordKey);
+						word.increaseTotal(sentence.getScore());
+						words.put(wordKey, word);
+					}
 				}
+			} catch (NullPointerException ignored) {
 			}
 		}
 
@@ -80,9 +112,13 @@ public class Analyzer {
 	/*
 	 * Implement this method in Part 3
 	 */
-	public static HashMap<String, Double> calculateScores(Set<Word> words) {
+	public static Map<String, Double> calculateScores(Set<Word> words) {
 
-		HashMap<String, Double> wordScores = new HashMap<>();
+		Map<String, Double> wordScores = new HashMap<>();
+
+		if (words == null || words.isEmpty()) {
+			return wordScores;
+		}
 
 		for (Word word : words) {
 			if (word == null) {
@@ -99,19 +135,30 @@ public class Analyzer {
 	 */
 	public static double calculateSentenceScore(Map<String, Double> wordScores, String sentence) {
 
-		StringTokenizer sentenceTokens = new StringTokenizer(sentence);
-		String word;
-		double sentenceScore = 0;
-
-		while (sentenceTokens.hasMoreTokens()) {
-			word = getStemmedWord(sentenceTokens.nextToken());
-			if (word == null) {
-				continue;
-			}
-			sentenceScore += wordScores.get(word);
+		if (wordScores == null || wordScores.isEmpty() || sentence == null || sentence.isEmpty()) {
+			return 0;
 		}
 
-		return sentenceScore;
+		double sentenceScoreSum = 0;
+		double sentenceWordCount = 0; // includes words both in and not in the wordScores set
+		StringTokenizer sentenceTokens = new StringTokenizer(sentence.toLowerCase());
+		String word;
+
+		while (sentenceTokens.hasMoreTokens()) {
+			sentenceWordCount += 1;
+			word = getStemmedWord(sentenceTokens.nextToken());
+			if (word == null || word.isEmpty() || !wordScores.containsKey(word)) {
+				continue;
+			}
+			sentenceScoreSum += wordScores.get(word);
+		}
+
+		// No valid word case
+		if (sentenceWordCount == 0) {
+			return 0;
+		}
+
+		return sentenceScoreSum / sentenceWordCount;
 	}
 
 	/*
@@ -122,7 +169,7 @@ public class Analyzer {
 		if (wordSplit.length == 0) {
 			return null;
 		}
-		return wordSplit[0];
+		return wordSplit[0].trim();
 	}
 	
 	/*
