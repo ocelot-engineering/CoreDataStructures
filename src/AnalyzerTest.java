@@ -1,5 +1,6 @@
 import org.junit.jupiter.api.Test;
 import java.util.List;
+import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -8,7 +9,7 @@ class AnalyzerTest {
     @Test
     void readFile() {
         // Read in test file
-        String path = "resources/reviews.txt";
+        String path = "resources/test/reviews.txt";
         List<Sentence> sentences = Analyzer.readFile(path);
 
         // Check scores
@@ -24,7 +25,28 @@ class AnalyzerTest {
 
     @Test
     void allWords() {
-        fail("Not yet implemented.");
+        // Read in test file
+        String path = "resources/test/reviewsSmall.txt";
+        List<Sentence> sentences = Analyzer.readFile(path);
+        Set<Word> wordSet = Analyzer.allWords(sentences);
+
+        // Check set is not empty
+        assertFalse(wordSet.isEmpty());
+
+        // Build testing objects - these will be contained in the set
+        Word wordPositive = new Word("positive");
+        Word wordNegative = new Word("negative");
+        Word wordWords = new Word("words");
+
+        wordPositive.increaseTotal(2);
+        wordNegative.increaseTotal(-1);
+        wordWords.increaseTotal(2);
+        wordWords.increaseTotal(-1);
+
+        // Check resulting set contains testing objects
+        assertTrue(wordSet.contains(wordPositive));
+        assertTrue(wordSet.contains(wordNegative));
+        assertTrue(wordSet.contains(wordWords));
     }
 
     @Test

@@ -32,7 +32,9 @@ public class Analyzer {
 		} catch (FileNotFoundException e) {
 			throw new RuntimeException(e);
 		} finally {
-			scanner.close();
+			if (scanner != null) {
+				scanner.close();
+			}
 		}
 
 		return sentences;
@@ -43,10 +45,38 @@ public class Analyzer {
 	 */
 	public static Set<Word> allWords(List<Sentence> sentences) {
 
-		/* IMPLEMENT THIS METHOD! */
-		
-		return null; // this line is here only so this code will compile if you don't modify it
+		HashMap<String, Word> words = new HashMap<>();
+		Word word;
+		StringTokenizer sentenceTokens;
+		String wordKey;
+		String[] wordKeySplit;
 
+		for (Sentence sentence : sentences) {
+			sentenceTokens = new StringTokenizer(sentence.getText());
+
+			while (sentenceTokens.hasMoreTokens()) {
+				// Clean word so it can be used as key
+				wordKey = sentenceTokens.nextToken().toLowerCase().trim();
+				wordKeySplit = wordKey.split("\\p{Punct}");
+				if (wordKeySplit.length == 0) {
+					continue;
+				}
+				wordKey = wordKeySplit[0];
+
+				// Add or update word in hashset
+				if (words.containsKey(wordKey)) {
+					words.get(wordKey).increaseTotal(sentence.getScore());
+				} else {
+					word = new Word(wordKey);
+					word.increaseTotal(sentence.getScore());
+					words.put(wordKey, word);
+				}
+			}
+		}
+
+		// Homework assignment requires to output set rather than map. Hashmap is the better data structure for this
+		// functionality, so used that above and converted here for the output.
+		return new HashSet<>(words.values());
 	}
 	
 	/*
