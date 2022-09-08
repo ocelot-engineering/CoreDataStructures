@@ -1,7 +1,7 @@
-import java.util.List;
-import java.util.Map;
-import java.util.Scanner;
-import java.util.Set;
+import java.io.BufferedReader;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.util.*;
 
 /*
  * SD2x Homework #3
@@ -15,10 +15,27 @@ public class Analyzer {
 	 */
 	public static List<Sentence> readFile(String filename) {
 
-		/* IMPLEMENT THIS METHOD! */
-		
-		return null; // this line is here only so this code will compile if you don't modify it
+		Scanner scanner = null;
+		LinkedList<Sentence> sentences = new LinkedList<>();
+		String line; // entire line includes both score and text
+		int score;   // score only
+		String text; // text only
 
+		try {
+			scanner = new Scanner(new BufferedReader(new FileReader(filename)));
+			while (scanner.hasNext()) {
+				line = scanner.nextLine();
+				score = Integer.parseInt(line.substring(0,2).trim());
+				text = line.substring(2).trim();
+				sentences.add(new Sentence(score, text));
+			}
+		} catch (FileNotFoundException e) {
+			throw new RuntimeException(e);
+		} finally {
+			scanner.close();
+		}
+
+		return sentences;
 	}
 	
 	/*
