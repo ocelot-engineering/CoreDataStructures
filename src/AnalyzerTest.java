@@ -1,6 +1,6 @@
 import org.junit.jupiter.api.Test;
 
-import java.util.HashMap;
+import java.util.Map;
 import java.util.List;
 import java.util.Set;
 
@@ -26,6 +26,18 @@ class AnalyzerTest {
     }
 
     @Test
+    void sentenceIsValid() {
+        assertTrue(Analyzer.sentenceIsValid("1 test"));
+        assertTrue(Analyzer.sentenceIsValid("0 test"));
+        assertTrue(Analyzer.sentenceIsValid("-2 test"));
+        assertTrue(Analyzer.sentenceIsValid("-1 A test with more words"));
+        assertFalse(Analyzer.sentenceIsValid("3 test"));
+        assertFalse(Analyzer.sentenceIsValid("2  test"));
+        assertFalse(Analyzer.sentenceIsValid(". test"));
+        assertFalse(Analyzer.sentenceIsValid("f1 test with many words"));
+    }
+
+    @Test
     void allWords() {
         // Read in test file
         String path = "resources/test/reviewsSmall.txt";
@@ -39,16 +51,21 @@ class AnalyzerTest {
         Word wordPositive = new Word("positive");
         Word wordNegative = new Word("negative");
         Word wordWords = new Word("words");
+        Word wordEllipsis = new Word("...");
 
         wordPositive.increaseTotal(2);
         wordNegative.increaseTotal(-1);
         wordWords.increaseTotal(2);
         wordWords.increaseTotal(-1);
+        wordEllipsis.increaseTotal(1);
 
         // Check resulting set contains testing objects
         assertTrue(wordSet.contains(wordPositive));
         assertTrue(wordSet.contains(wordNegative));
         assertTrue(wordSet.contains(wordWords));
+
+        // Check wordSet size
+        assertEquals(8, wordSet.size());
     }
 
     @Test
@@ -57,7 +74,7 @@ class AnalyzerTest {
         String path = "resources/test/reviewsSmall.txt";
         List<Sentence> sentences = Analyzer.readFile(path);
         Set<Word> words = Analyzer.allWords(sentences);
-        HashMap<String, Double> wordScores = Analyzer.calculateScores(words);
+        Map<String, Double> wordScores = Analyzer.calculateScores(words);
 
         assertEquals(2, wordScores.get("positive"));
         assertEquals(-1, wordScores.get("negative"));
@@ -70,10 +87,10 @@ class AnalyzerTest {
         String path = "resources/test/reviewsSmall.txt";
         List<Sentence> sentences = Analyzer.readFile(path);
         Set<Word> words = Analyzer.allWords(sentences);
-        HashMap<String, Double> wordScores = Analyzer.calculateScores(words);
+        Map<String, Double> wordScores = Analyzer.calculateScores(words);
 
         // Check 2 simple sentences
-        assertEquals(2.5, Analyzer.calculateSentenceScore(wordScores, "positive words"));
-        assertEquals(-0.5, Analyzer.calculateSentenceScore(wordScores, "negative words"));
+        assertEquals(1.25, Analyzer.calculateSentenceScore(wordScores, "positive words"));
+        assertEquals(-0.25, Analyzer.calculateSentenceScore(wordScores, "negative words"));
     }
 }
