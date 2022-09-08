@@ -56,12 +56,10 @@ public class Analyzer {
 
 			while (sentenceTokens.hasMoreTokens()) {
 				// Clean word so it can be used as key
-				wordKey = sentenceTokens.nextToken().toLowerCase().trim();
-				wordKeySplit = wordKey.split("\\p{Punct}");
-				if (wordKeySplit.length == 0) {
+				wordKey = getStemmedWord(sentenceTokens.nextToken());
+				if (wordKey == null) {
 					continue;
 				}
-				wordKey = wordKeySplit[0];
 
 				// Add or update word in hashset
 				if (words.containsKey(wordKey)) {
@@ -82,12 +80,18 @@ public class Analyzer {
 	/*
 	 * Implement this method in Part 3
 	 */
-	public static Map<String, Double> calculateScores(Set<Word> words) {
+	public static HashMap<String, Double> calculateScores(Set<Word> words) {
 
-		/* IMPLEMENT THIS METHOD! */
-		
-		return null; // this line is here only so this code will compile if you don't modify it
+		HashMap<String, Double> wordScores = new HashMap<>();
 
+		for (Word word : words) {
+			if (word == null) {
+				continue;
+			}
+			wordScores.put(word.getText(), word.calculateScore());
+		}
+
+		return wordScores;
 	}
 	
 	/*
@@ -95,10 +99,30 @@ public class Analyzer {
 	 */
 	public static double calculateSentenceScore(Map<String, Double> wordScores, String sentence) {
 
-		/* IMPLEMENT THIS METHOD! */
-		
-		return 0; // this line is here only so this code will compile if you don't modify it
+		StringTokenizer sentenceTokens = new StringTokenizer(sentence);
+		String word;
+		double sentenceScore = 0;
 
+		while (sentenceTokens.hasMoreTokens()) {
+			word = getStemmedWord(sentenceTokens.nextToken());
+			if (word == null) {
+				continue;
+			}
+			sentenceScore += wordScores.get(word);
+		}
+
+		return sentenceScore;
+	}
+
+	/*
+	* Effectively stems the word and removes anything after punctuation.
+	*/
+	private static String getStemmedWord(String word) {
+		String[] wordSplit = word.toLowerCase().trim().split("\\p{Punct}");
+		if (wordSplit.length == 0) {
+			return null;
+		}
+		return wordSplit[0];
 	}
 	
 	/*

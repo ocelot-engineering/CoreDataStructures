@@ -1,4 +1,6 @@
 import org.junit.jupiter.api.Test;
+
+import java.util.HashMap;
 import java.util.List;
 import java.util.Set;
 
@@ -51,11 +53,27 @@ class AnalyzerTest {
 
     @Test
     void calculateScores() {
-        fail("Not yet implemented.");
+        // Read in test file
+        String path = "resources/test/reviewsSmall.txt";
+        List<Sentence> sentences = Analyzer.readFile(path);
+        Set<Word> words = Analyzer.allWords(sentences);
+        HashMap<String, Double> wordScores = Analyzer.calculateScores(words);
+
+        assertEquals(2, wordScores.get("positive"));
+        assertEquals(-1, wordScores.get("negative"));
+        assertEquals(0.5, wordScores.get("words"));
     }
 
     @Test
     void calculateSentenceScore() {
-        fail("Not yet implemented.");
+        // Read in test file and create wordScores
+        String path = "resources/test/reviewsSmall.txt";
+        List<Sentence> sentences = Analyzer.readFile(path);
+        Set<Word> words = Analyzer.allWords(sentences);
+        HashMap<String, Double> wordScores = Analyzer.calculateScores(words);
+
+        // Check 2 simple sentences
+        assertEquals(2.5, Analyzer.calculateSentenceScore(wordScores, "positive words"));
+        assertEquals(-0.5, Analyzer.calculateSentenceScore(wordScores, "negative words"));
     }
 }
